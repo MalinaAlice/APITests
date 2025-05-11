@@ -1,39 +1,24 @@
 package tests.e2e;
 
-import loggerUtility.LoggerUtility;
-import modelObject.request.RequestCreateUser;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import frontend.pages.LoginPage;
+import io.qameta.allure.Feature;
+import modelObject.ModelPath;
+import modelObject.backend.request.RequestCreateUser;
 import org.testng.annotations.Test;
-import services.AccountService;
-import sharedData.SharedData;
+import backend.services.AccountService;
+import sharedData.Hooks;
+import suites.AtfSuite;
 
-public class CreateUserTest extends SharedData {
+@Feature("FeatureE2E")
+public class CreateUserTest extends Hooks {
 
-    @Test
+    @Test(groups = AtfSuite.E2E_SUITE)
     public void testMethod() {
-        RequestCreateUser requestBody = new RequestCreateUser("src/main/resources/testData/CreateUserData.json");
-
+        RequestCreateUser requestBody = new RequestCreateUser(ModelPath.REQUEST_CREATE_USER_PATH);
         AccountService accountService = new AccountService();
         accountService.createAccount(requestBody);
 
-        WebDriver driver = new ChromeDriver();
-        driver.get("https://demoqa.com/login");
-        driver.manage().window().maximize();
-
-        WebElement userNameElement = driver.findElement(By.id("userName"));
-        userNameElement.sendKeys(requestBody.getUserName());
-        LoggerUtility.infoLog("The user fills username field with " + requestBody.getUserName() + " value");
-
-        WebElement passwordElement = driver.findElement(By.id("password"));
-        passwordElement.sendKeys(requestBody.getPassword());
-        LoggerUtility.infoLog("The user fills password field with " + requestBody.getPassword() + " value");
-
-        WebElement loginButton = driver.findElement(By.id("login"));
-        loginButton.click();
-        LoggerUtility.infoLog("The user clicks on Login field");
+        LoginPage loginPage = new LoginPage(driverService.getDriver());
+        loginPage.loginProcess(requestBody.getUserName(), requestBody.getPassword());
     }
-
 }

@@ -3,6 +3,7 @@ package loggerUtility;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.internal.RequestSpecificationImpl;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
@@ -31,12 +32,27 @@ public class LoggerUtility {
         infoLog(getRequestBody(requestSpecification));
     }
 
+    public static void responseLogs(Response response) {
+        infoLog("=== Response INFO ===");
+        infoLog(getResponseStatusCode(response));
+        infoLog(getResponseStatus(response));
+    }
+
     private static String getRequestURL(String path){
-        return "Request URI: https://demoqa.com"+path;
+        return "Request URI: https://demoqa.com" + path;
     }
 
     private static String getRequestMethod(String methodType){
-        return "Request METHOD: "+methodType;
+        return "Request METHOD: " + methodType;
+    }
+
+    private static String getResponseStatus(Response response) {
+        return "Response STATUS: " + response.getStatusLine();
+    }
+
+
+    private static String getResponseStatusCode(Response response) {
+        return "Response STATUS CODE: " + response.getStatusCode();
     }
 
     @SneakyThrows(JsonProcessingException.class)
@@ -50,5 +66,14 @@ public class LoggerUtility {
         }
 
         return requestBodyMessage;
+    }
+
+    private static String getResponseBody(Response response) {
+        String responseBodyMessage = "Response BODY: \n";
+        if (response.getBody() != null) {
+            return responseBodyMessage + response.getBody().asPrettyString();
+        } else {
+            return "";
+        }
     }
 }
